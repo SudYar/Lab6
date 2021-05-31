@@ -111,7 +111,7 @@ public class Client {
     }
 
     private Pack readPack() throws ClassNotFoundException, IOException {
-        byte[] b = new byte[10000];
+        byte[] b = new byte[20000];
         ByteBuffer buf = ByteBuffer.wrap(b);
         buf.clear();
         try {

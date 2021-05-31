@@ -12,9 +12,9 @@ public class Serializer {
         return byteArrayOutputStream.toByteArray();
     }
 
-    public static Pack deserialize(byte[] bytes) throws IOException, ClassNotFoundException {
-        ObjectInputStream inputStream = new ObjectInputStream(new ByteArrayInputStream(bytes));
-        return (Pack) inputStream.readObject();
+    public static Pack deserialize(InputStream inputStream) throws IOException, ClassNotFoundException {
+        ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+        return (Pack) objectInputStream.readObject();
     }
 
 

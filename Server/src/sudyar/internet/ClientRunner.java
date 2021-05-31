@@ -7,6 +7,7 @@ import sudyar.utilities.Serializer;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
@@ -46,14 +47,11 @@ public class ClientRunner extends Thread {
     }
 
     private Pack readPack() throws IOException, ClassNotFoundException {
-        byte[] buf = new byte[10000];
-        InputStream inputStream = socket.getInputStream();
-        inputStream.read(buf);
-        return Serializer.deserialize(buf);
+        return Serializer.deserialize(socket.getInputStream());
     }
 
     private void sendPack(Pack pack) {
-        OutputStream outputStream = null;
+        OutputStream outputStream;
         try {
             outputStream = socket.getOutputStream();
             outputStream.write(Serializer.serialize(pack));
