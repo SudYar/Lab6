@@ -52,8 +52,7 @@ public class Server {
                     Pack answer;
                     if (clientCollection.size() < MAX_CONNECTION){
                         answer = new Pack("Подключение удалось");
-                        OutputStream outputStream = clientSocket.getOutputStream();
-                        outputStream.write(Serializer.serialize(answer));
+                        sendPack(answer, clientSocket);
                         ClientRunner newClient = new ClientRunner(clientSocket, this, clientCommands);
                         clientCollection.add(clientSocket);
                         newClient.start();
@@ -61,8 +60,7 @@ public class Server {
                     else {
                         answer = new Pack("Сервер переполнен, подключайтесь позже");
                         printInf("Сервер переполнен, отключаем клиента");
-                        OutputStream outputStream = clientSocket.getOutputStream();
-                        outputStream.write(Serializer.serialize(answer));
+                        sendPack(answer, clientSocket);
                         clientSocket.close();
                     }
 
@@ -120,6 +118,24 @@ public class Server {
             }
 
         });
+
+    }
+    private void sendPack(Pack pack, Socket socket) {
+        OutputStream outputStream;
+        try {
+            outputStream = socket.getOutputStream();
+            byte[] buf = Serializer.serialize(pack);
+            outputStream.write(Serializer.serialize(new Pack(String.valueOf(buf.length))));
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            outputStream.write(buf);
+        } catch (IOException e) {
+            printErr("Не получилось отправить данные клиенту, отключаем его");
+            removeClient(socket);
+        }
 
     }
 

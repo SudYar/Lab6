@@ -111,9 +111,17 @@ public class Client {
     }
 
     private Pack readPack() throws ClassNotFoundException, IOException {
-        byte[] b = new byte[20000];
+        byte[] b = new byte[500];
         ByteBuffer buf = ByteBuffer.wrap(b);
         buf.clear();
+        try {
+            socketChannel.read(buf);
+        } catch (IOException e) {
+            return null;
+        }
+        Pack packWithCount = Serializer.deserialize(b);
+        b = new byte[Integer.parseInt(packWithCount.getAnswer())];
+        buf = ByteBuffer.wrap(b);
         try {
             socketChannel.read(buf);
         } catch (IOException e) {

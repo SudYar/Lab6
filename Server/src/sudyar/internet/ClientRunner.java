@@ -7,10 +7,8 @@ import sudyar.utilities.Serializer;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.nio.ByteBuffer;
 
 public class ClientRunner extends Thread {
     private Socket socket;
@@ -58,7 +56,14 @@ public class ClientRunner extends Thread {
         OutputStream outputStream;
         try {
             outputStream = socket.getOutputStream();
-            outputStream.write(Serializer.serialize(pack));
+            byte[] buf = Serializer.serialize(pack);
+            outputStream.write(Serializer.serialize(new Pack(String.valueOf(buf.length))));
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                server.printErr("Ошибка с потоком: " + e.getMessage());
+            }
+            outputStream.write(buf);
         } catch (IOException e) {
             server.printErr("Не получилось отправить данные клиенту, отключаем его");
             server.removeClient(socket);
