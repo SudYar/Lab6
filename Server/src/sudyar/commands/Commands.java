@@ -36,7 +36,6 @@ public class Commands {
     }
 
     public Commands(HashSet<Command> set){
-        System.out.println("Введите help, чтобы вывести справку по доступным командам");
         for (Command command: set) {
             commands.put(command.getName(), command);
         }

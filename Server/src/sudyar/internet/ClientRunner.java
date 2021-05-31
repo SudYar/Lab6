@@ -15,13 +15,15 @@ import java.nio.ByteBuffer;
 public class ClientRunner extends Thread {
     private Socket socket;
     private Server server;
+    private Commands commands;
 
-    public ClientRunner(Socket socket, Server server) {
+    public ClientRunner(Socket socket, Server server, Commands commands) {
         this.socket = socket;
         this.server = server;
+        this.commands = commands;
     }
 
-    public void run(Commands commands){
+    public void run(){
         CommandsExecute commandsExecute = new CommandsExecute(commands);
         while (server.getClientCollection().contains(socket) && server.isServerRun()) {
 
@@ -31,7 +33,8 @@ public class ClientRunner extends Thread {
                 Pack newPack = new Pack(answer);
                 sendPack(newPack);
             } catch (IOException e) {
-                server.printErr("Ошибка со связью с клиентом, отключаем его");
+                if ("Connection reset".equals(e.getMessage())) server.printInf("Клиент отключился");
+                else server.printErr(e.getMessage());
                 try {
                     server.removeClient(socket);
                     socket.close();
@@ -47,7 +50,8 @@ public class ClientRunner extends Thread {
     }
 
     private Pack readPack() throws IOException, ClassNotFoundException {
-        return Serializer.deserialize(socket.getInputStream());
+        InputStream inputStream = socket.getInputStream();
+        return Serializer.deserialize(inputStream);
     }
 
     private void sendPack(Pack pack) {

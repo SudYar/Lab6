@@ -43,7 +43,6 @@ public class StudyGroup implements Comparable<StudyGroup>, Serializable {
     }
 
     public StudyGroup() {
-        creationDate = new Date();
     }
 
     public int getId() {

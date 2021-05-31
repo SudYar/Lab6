@@ -24,6 +24,7 @@ public class StudyGroupCollection {
         if ((s.getGroupAdmin() != null) && (passportIdSet.contains(s.getGroupAdmin().getPassportID())))
             throw new DuplicateException("ERROR: Повторение passportId админа");
         collection.put(s.getId(), s);
+        if (s.getId() > maxId) maxId = s.getId();
         if (s.getGroupAdmin() != null) passportIdSet.add(s.getGroupAdmin().getPassportID());
     }
     public void update(int id, StudyGroup s) throws DuplicateException{

@@ -19,7 +19,7 @@ public class Server {
     StudyGroupCollection studyGroupCollection;
     int port;
 //    static final Logger logger = Logger.getLogger(Server.class.getName());
-    public static final int MAX_CONNECTION = 1;
+    public static final int MAX_CONNECTION = 3;
     private boolean serverRun = true;
     private HashSet<Socket> clientCollection = new HashSet<>();
 
@@ -43,9 +43,10 @@ public class Server {
         getServerConsole(serverCommands).start();
         try(ServerSocket serverSocket = new ServerSocket(31174, 1)) {
             printInf("Сервер запущен");
-
+            Socket clientSocket;
             while (serverRun){
-                try (Socket clientSocket = serverSocket.accept()) {
+                try {
+                    clientSocket = serverSocket.accept();
 
                     printInf("Подключился клиент");
                     Pack answer;
@@ -53,8 +54,9 @@ public class Server {
                         answer = new Pack("Подключение удалось");
                         OutputStream outputStream = clientSocket.getOutputStream();
                         outputStream.write(Serializer.serialize(answer));
+                        ClientRunner newClient = new ClientRunner(clientSocket, this, clientCommands);
                         clientCollection.add(clientSocket);
-                        new ClientRunner(clientSocket, this).run(clientCommands);
+                        newClient.start();
                     }
                     else {
                         answer = new Pack("Сервер переполнен, подключайтесь позже");

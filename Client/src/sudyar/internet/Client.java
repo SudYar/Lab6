@@ -68,7 +68,7 @@ public class Client {
                             try {
                                 Pack answer = readPack();
                                 if (answer!= null) System.out.println(answer.getAnswer());
-                                else System.out.println("Ошибка, получен огромный пакет, обратитесь к разработчику");
+                                else System.out.println("Ошибка при получении пакета");
                             } catch (IOException e) {
                                 System.out.println("Ошибка сериализации, сломан пакет");
                             } catch (ClassNotFoundException e) {
@@ -89,7 +89,7 @@ public class Client {
                         try {
                             Pack answer = readPack();
                             if (answer!= null) System.out.println(answer.getAnswer());
-                            else System.out.println("Ошибка, получен огромный пакет, обратитесь к разработчику");
+                            else System.out.println("Ошибка при получении пакета");
                         } catch (IOException e) {
                             System.out.println("Непредвиденная ошибка при получении данных");
                         } catch (ClassNotFoundException e) {

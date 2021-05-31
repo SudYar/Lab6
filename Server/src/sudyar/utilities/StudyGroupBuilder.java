@@ -3,6 +3,7 @@ package sudyar.utilities;
 import sudyar.data.*;
 import sudyar.exception.DuplicateException;
 
+import java.util.Date;
 import java.util.Locale;
 
 public class StudyGroupBuilder {
@@ -14,7 +15,9 @@ public class StudyGroupBuilder {
     private String passportId;
 
     public StudyGroupBuilder() {
+
         studyGroup = new StudyGroup();
+        studyGroup.setCreationDate(new Date());
     }
 
     public boolean addName (String line){
