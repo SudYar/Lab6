@@ -17,6 +17,7 @@ public class Main {
         set1.add(new InfoCommand(collection));
         set1.add(new ExitCommand());
         set1.add(new ShowCommand(collection));
+        set1.add(new ShowOneCommand(collection));
         set2.add(new InsertCommand(collection));
         set2.add(new UpdateCommand(collection));
         set1.add(new RemoveKeyCommand(collection));

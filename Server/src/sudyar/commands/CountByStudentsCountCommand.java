@@ -1,5 +1,6 @@
 package sudyar.commands;
 
+import sudyar.data.StudyGroup;
 import sudyar.data.StudyGroupCollection;
 import sudyar.utilities.Pack;
 import sudyar.utilities.StudyGroupParser;
@@ -30,11 +31,7 @@ public class CountByStudentsCountCommand extends AbstractCommand{
             if (studentsCount == null)
                 throw new IllegalArgumentException("Неверный аргумент, пожалуйста, введите int > 0");
             else {
-                int count = 0;
-                for (Integer i : studyGroupCollection.getCollection().keySet()) {
-                    if (studentsCount.equals(studyGroupCollection.getById(i).getStudentsCount()))
-                        count++;
-                }
+                int count = (int) studyGroupCollection.getCollection().values().stream().mapToInt(StudyGroup::getStudentsCount).filter(studentsCount::equals).count();
                 return "Колличество элементов с таким же studentCount: " + count;
             }
 

@@ -27,12 +27,14 @@ public class ClientRunner extends Thread {
 
             try {
                 Pack request = readPack();
+                server.printInf("Полученный пакет: \n"+request.toString());
                 String answer = commandsExecute.execute(request);
+                server.printInf("Результат команды: " + answer);
                 Pack newPack = new Pack(answer);
                 sendPack(newPack);
             } catch (IOException e) {
                 if ("Connection reset".equals(e.getMessage())) server.printInf("Клиент отключился");
-                else server.printErr(e.getMessage());
+                else server.printErr(e.toString());
                 try {
                     server.removeClient(socket);
                     socket.close();

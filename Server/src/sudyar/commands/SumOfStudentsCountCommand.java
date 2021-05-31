@@ -1,5 +1,6 @@
 package sudyar.commands;
 
+import sudyar.data.StudyGroup;
 import sudyar.data.StudyGroupCollection;
 import sudyar.utilities.Pack;
 
@@ -13,7 +14,7 @@ public class SumOfStudentsCountCommand extends AbstractCommand {
 
     @Override
     public String execute(Pack pack) {
-        int sumOfStudentsCount = studyGroupCollection.getCollection().values().stream().mapToInt(w -> w.getStudentsCount()).sum();
+        int sumOfStudentsCount = studyGroupCollection.getCollection().values().stream().mapToInt(StudyGroup::getStudentsCount).sum();
         if (sumOfStudentsCount == 0) return ("Коллекция пуста, тут нет групп");
         else return ("Колличество студентов: " + sumOfStudentsCount);
     }

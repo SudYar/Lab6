@@ -19,8 +19,9 @@ public class RemoveGreaterCommand extends AbstractCommand{
         StudyGroup studyGroup = pack.getStudyGroup();
         if (studyGroup == null) return "ERROR: В пакете нет StudyGroup";
 
-        for (int i : studyGroupCollection.getCollection().keySet()) {
-            if (studyGroup.compareTo(studyGroupCollection.getById(i)) < 0) studyGroupCollection.remove(i);
+        for (int i : studyGroupCollection.getCollection().values().stream().filter(group -> studyGroup.compareTo(group) < 0).
+                mapToInt(StudyGroup::getId).toArray()) {
+           studyGroupCollection.remove(i);
         }
 
 

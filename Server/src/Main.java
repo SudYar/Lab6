@@ -3,7 +3,10 @@ import sudyar.data.StudyGroupCollection;
 import sudyar.internet.Server;
 import sudyar.utilities.FileParser;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Scanner;
 
@@ -21,9 +24,18 @@ public class Main {
         }
         while (fileParser == null){
             System.out.println("Хотите ввести другой путь до файла? Если нет, введите пустую строку");
-            Scanner scan = new Scanner(System.in);
-            String line = scan.nextLine();
-            if ((line == null) || ("".equals(line))) {
+            BufferedReader scanner = new BufferedReader(new InputStreamReader(System.in));
+            String line = null;
+            try {
+                line = scanner.readLine();
+            } catch (IOException e) {
+                System.out.println("Непредвиденная ошибка: " + e.getMessage());
+            }
+            if (line == null) {
+                System.out.println("Вы ввели Ctrl + D. Завершаем работу");
+                System.exit(1);
+            }
+            if ("".equals(line)) {
                 fileParser = new FileParser();
             } else fileParser = getFile(line.trim());
         }
@@ -43,6 +55,7 @@ public class Main {
         set2.add(new HelpCommand());
         set1.add(new InfoCommand(collection));
         set1.add(new ShowCommand(collection));
+        set1.add(new ShowOneCommand(collection));
         set3.add(new InsertCommand(collection));
         set3.add(new UpdateCommand(collection));
         set1.add(new RemoveKeyCommand(collection));

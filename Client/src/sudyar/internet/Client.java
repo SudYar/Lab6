@@ -22,7 +22,7 @@ import java.util.Scanner;
 public class Client {
 
     SocketChannel socketChannel;
-    Scanner scanner = new Scanner(System.in);
+    BufferedReader scanner =new BufferedReader(new InputStreamReader(System.in));
     Commands commands;
     boolean isConnected = false;
 
@@ -31,20 +31,23 @@ public class Client {
     }
 
     public String readLine(){
-        return scanner.nextLine();
+        String line;
+        try {
+            line = scanner.readLine();
+        } catch (IOException e) {
+            System.out.println("Ошибка ввода, пожалуйста не вводите это снова");
+            return "";
+        }
+        return line;
     }
 
     public void run (Commands comm){
         this.commands = comm;
-        try {
-            String answer = readPack().getAnswer();
-            if ("Подключение удалось".equals(answer)) isConnected = true;
-            System.out.println(answer);
-        } catch (IOException e) {
-            System.out.println("Сервер недоступен");
-        } catch (ClassNotFoundException e) {
-            System.out.println("Пакет сломался при передаче");
-        }
+        String answer = readPack().getAnswer();
+        if ("Подключение удалось".equals(answer)) isConnected = true;
+        System.out.println(answer);
+
+
         String line;
         while (isConnected){
             System.out.print("$");
@@ -54,55 +57,56 @@ public class Client {
             if (command.length>1) argument = command[1];
             else argument = null;
             for (int i = 0; i < command.length; i++) command[i] = command[i].trim();
-            try {
-                if (commands.getCommands().containsKey(command[0])) {
-                    if ("help".equals(command[0])) {
-                        System.out.println(commands);
-                    }else if ("exit".equals(command[0])) {
-                        commands.getCommand(command[0]).execute(null);
-                    }else
-                    if ("execute_script".equals(command[0])) {
-                        Pack pack = readScript(argument);
-                        if (pack != null) {
-                            sendPack(pack);
-                            try {
-                                Pack answer = readPack();
-                                if (answer!= null) System.out.println(answer.getAnswer());
-                                else System.out.println("Ошибка при получении пакета");
-                            } catch (IOException e) {
-                                System.out.println("Ошибка сериализации, сломан пакет");
-                            } catch (ClassNotFoundException e) {
-                                System.out.println("Пакет сломался при передаче");
-                            }
-                        }
-                    } else{
-                        Pack request;
-                        Command thisCommand = commands.getCommand(command[0]);
-                        if (!"VALID".equals(thisCommand.isValidArgument(argument))) {
-                            System.out.println(thisCommand.isValidArgument(argument));
-                            continue;
-                        }
-                        if (commands.isNeedStudyGroup(command[0])) request = new Pack(commands.getCommand(command[0]), argument,
-                                new StudyGroupAsk().getStudyGroup(this));
-                        else request = new Pack(commands.getCommand(command[0]), argument);
-                        sendPack(request);
-                        try {
-                            Pack answer = readPack();
-                            if (answer!= null) System.out.println(answer.getAnswer());
-                            else System.out.println("Ошибка при получении пакета");
-                        } catch (IOException e) {
-                            System.out.println("Непредвиденная ошибка при получении данных");
-                        } catch (ClassNotFoundException e) {
-                            System.out.println("Пакет сломался при передаче");
-                        }
-                    }
-                }
-                else System.out.println("Error: Нет такой команды");
 
-            } catch (IOException e) {
-                System.out.println("Сервер отключился, завершение программы");
-                isConnected = false;
+            if (commands.getCommands().containsKey(command[0])) {
+                if ("help".equals(command[0])) {
+                    System.out.println(commands);
+                }else if ("exit".equals(command[0])) {
+                    commands.getCommand(command[0]).execute(null);
+                }else
+                if ("execute_script".equals(command[0])) {
+                    Pack pack = readScript(argument);
+                    if (pack != null) {
+                        sendPack(pack);
+
+                        Pack answerPack = readPack();
+                        if (answerPack!= null && !"".equals(answerPack.getAnswer())) System.out.println(answerPack.getAnswer());
+                        else System.out.println("Ошибка при получении пакета");
+
+                    }
+                } else{
+                    Pack request;
+                    Command thisCommand = commands.getCommand(command[0]);
+                    if (!"VALID".equals(thisCommand.isValidArgument(argument))) {
+                        System.out.println(thisCommand.isValidArgument(argument));
+                        continue;
+                    }
+                    if (commands.isNeedStudyGroup(command[0])) {
+                        if ("update".equals(command[0]) || "replace_if_lowe".equals(command[0])) {
+                            Pack testRequest = new Pack(commands.getCommand("show_one"), argument);
+                            sendPack(testRequest);
+                            Pack testAnswer = readPack();
+                            if (testAnswer != null && !"".equals( testAnswer.getAnswer())) {
+                                if (!testAnswer.getAnswer().contains("\n")) {
+                                    System.out.println(testAnswer.getAnswer());
+                                    continue;
+                                } else System.out.println("Найден такой Id у группы\n" + testAnswer.getAnswer());
+                            }
+                            else System.out.println("Ошибка при получении пакета");
+                        }
+                        request = new Pack(commands.getCommand(command[0]), argument,
+                                new StudyGroupAsk().getStudyGroup(this));
+                    }
+                    else request = new Pack(commands.getCommand(command[0]), argument);
+                    sendPack(request);
+
+                    Pack answerPack = readPack();
+                    if (answerPack != null && !"".equals( answerPack.getAnswer())) System.out.println(answerPack.getAnswer());
+                    else System.out.println("Ошибка при получении пакета");
+
+                }
             }
+            else System.out.println("Error: Нет такой команды");
 
         }
         System.out.println("Завершение программы");
@@ -110,24 +114,29 @@ public class Client {
 
     }
 
-    private Pack readPack() throws ClassNotFoundException, IOException {
+    private Pack readPack() {
         byte[] b = new byte[500];
         ByteBuffer buf = ByteBuffer.wrap(b);
         buf.clear();
+        Pack packWithCount;
         try {
             socketChannel.read(buf);
+            packWithCount = Serializer.deserialize(b);
+        } catch (ClassNotFoundException e ) {
+            packWithCount = new Pack("20000");
         } catch (IOException e) {
-            return null;
+            System.out.println("Ошибка при получении данных с сервера. Возможно, сервер отключился");
+            packWithCount = new Pack("20000");
         }
-        Pack packWithCount = Serializer.deserialize(b);
         b = new byte[Integer.parseInt(packWithCount.getAnswer())];
         buf = ByteBuffer.wrap(b);
+        Pack serverAnswer;
         try {
             socketChannel.read(buf);
-        } catch (IOException e) {
-            return null;
+            serverAnswer= Serializer.deserialize(b);
+        } catch (IOException | ClassNotFoundException e) {
+            serverAnswer = new Pack("");
         }
-        Pack serverAnswer = Serializer.deserialize(b);
         return serverAnswer;
     }
 
@@ -142,9 +151,15 @@ public class Client {
             return new Pack(commands.getCommand("execute_script"), lines);
         } else return null;
     }
-    private void sendPack(Pack pack) throws IOException {
-        ByteBuffer buffer = ByteBuffer.wrap(Serializer.serialize(pack));
-        socketChannel.write(buffer);
+    private void sendPack(Pack pack) {
+        try {
+            ByteBuffer buffer = ByteBuffer.wrap(Serializer.serialize(pack));
+            socketChannel.write(buffer);
+        } catch (IOException e) {
+            System.out.println("Сервер не доступен. Завершение работы");
+            isConnected = false;
+        }
+
     }
 
 }

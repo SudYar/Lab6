@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 public class StudyGroupCollection {
     private final HashMap<Integer, StudyGroup > collection;
@@ -86,10 +87,11 @@ public class StudyGroupCollection {
     @Override
     public String toString() {
         String result = "";
-        for (int i: collection.keySet()) {
-            result += collection.get(i) + "\n";
+        for (StudyGroup s: collection.values().stream().sorted().collect(Collectors.toList())) {
+            result += s.toString() + "\n";
         }
         if (isEmpty()) return "Коллекция пуста";
         else return result.trim();
+
     }
 }

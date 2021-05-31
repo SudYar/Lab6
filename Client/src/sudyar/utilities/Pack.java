@@ -59,4 +59,13 @@ public class Pack implements Serializable {
     public List<String> getScript() {
         return script;
     }
+
+    @Override
+    public String toString() {
+        return "command: " + (command == null ? "null" : command.getName())  + "\n" +
+                " argument: " + argument + '\n' +
+                " studyGroup: " + studyGroup + "\n"+
+                " answer: " + answer + '\n' +
+                " script: " + script;
+    }
 }

@@ -2,16 +2,14 @@ package sudyar.commands;
 
 import sudyar.data.StudyGroup;
 import sudyar.data.StudyGroupCollection;
-import sudyar.exception.DuplicateException;
 import sudyar.utilities.Pack;
 import sudyar.utilities.StudyGroupParser;
 
-
-public class UpdateCommand extends AbstractCommand {
+public class ShowOneCommand extends AbstractCommand{
     private StudyGroupCollection studyGroupCollection;
 
-    public UpdateCommand(StudyGroupCollection studyGroupCollection) {
-        super("update","id", "Обновить значение элемента коллекции, id которого равен введенному");
+    public ShowOneCommand(StudyGroupCollection studyGroupCollection) {
+        super("show_one","id", "Вывести элемент с данным id");
         this.studyGroupCollection = studyGroupCollection;
     }
 
@@ -25,18 +23,12 @@ public class UpdateCommand extends AbstractCommand {
     @Override
     public String execute(Pack pack) {
         String argument = pack.getArgument();
-        StudyGroup s = pack.getStudyGroup();
         if (argument == null) return "Нет аргументов, требуется id типа int";
-        if (s == null) return "В пакете нет StudyGroup";
         Integer id = StudyGroupParser.parseId(argument);
         if (id == null) return "Аргумент не является int > 0";
 
         if ( !studyGroupCollection.getCollection().containsKey(id)) return "Нет элемента с таким id";
-        else try {
-            studyGroupCollection.update(id, s);
-            return "Элемент заменен";
-        } catch (DuplicateException e) {
-            return e.getMessage();
-        }
+        else return studyGroupCollection.getById(id).toString();
+
     }
 }
