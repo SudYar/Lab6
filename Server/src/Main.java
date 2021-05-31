@@ -3,10 +3,7 @@ import sudyar.data.StudyGroupCollection;
 import sudyar.internet.Server;
 import sudyar.utilities.FileParser;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.HashSet;
 import java.util.Scanner;
 
@@ -18,6 +15,15 @@ public class Main {
         String filePath = "Test.txt";
 
         String log = "log.txt";
+        File logFile = new File(log);
+        if (!logFile.isFile()) {
+            try {
+                logFile.createNewFile();
+            } catch (IOException e) {
+                System.out.println("Проблемы с лог файлом, дайте доступный log.txt");
+                System.exit(1);
+            }
+        }
         FileParser fileParser = null;
         if (args != null && args.length>0) {
             fileParser = getFile(args[0]);

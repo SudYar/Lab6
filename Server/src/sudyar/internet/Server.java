@@ -152,7 +152,7 @@ public class Server {
     }
 
     public void printInf(String line){
-        System.out.println(line);
+        System.out.println(line + "\n");
         logger.info(line);
     }
     public void println(String line){
