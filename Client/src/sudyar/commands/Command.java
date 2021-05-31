@@ -13,4 +13,5 @@ public interface Command {
     String getName();
     String getDescriptionArgument();
     String execute(Pack pack);
+    String isValidArgument(String argument);
 }

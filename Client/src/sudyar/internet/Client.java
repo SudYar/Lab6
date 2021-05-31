@@ -1,8 +1,11 @@
 package sudyar.internet;
 
+import sudyar.commands.AbstractCommand;
+import sudyar.commands.Command;
 import sudyar.commands.Commands;
 import sudyar.utilities.Pack;
 import sudyar.utilities.Serializer;
+import sudyar.utilities.StudyGroupAsk;
 
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -63,20 +66,30 @@ public class Client {
                         if (pack != null) {
                             sendPack(pack);
                             try {
-                                System.out.println(readPack().getAnswer());
+                                Pack answer = readPack();
+                                if (answer!= null) System.out.println(answer.getAnswer());
+                                else System.out.println("Ошибка, получен огромный пакет, обратитесь к разработчику");
                             } catch (IOException e) {
-                                System.out.println("Сервер отключен");
-                                isConnected = false;
-                                break;
+                                System.out.println("Ошибка сериализации, сломан пакет");
                             } catch (ClassNotFoundException e) {
                                 System.out.println("Пакет сломался при передаче");
-                                ;
                             }
                         }
-                    } else {
-                        sendPack(new Pack(commands.getCommand(command[0]), argument));
+                    } else{
+                        Pack request;
+                        Command thisCommand = commands.getCommand(command[0]);
+                        if (!"VALID".equals(thisCommand.isValidArgument(argument))) {
+                            System.out.println(thisCommand.isValidArgument(argument));
+                            continue;
+                        }
+                        if (commands.isNeedStudyGroup(command[0])) request = new Pack(commands.getCommand(command[0]), argument,
+                                new StudyGroupAsk().getStudyGroup(this));
+                        else request = new Pack(commands.getCommand(command[0]), argument);
+                        sendPack(request);
                         try {
-                            System.out.println(readPack().getAnswer());
+                            Pack answer = readPack();
+                            if (answer!= null) System.out.println(answer.getAnswer());
+                            else System.out.println("Ошибка, получен огромный пакет, обратитесь к разработчику");
                         } catch (IOException e) {
                             System.out.println("Непредвиденная ошибка при получении данных");
                         } catch (ClassNotFoundException e) {
@@ -97,11 +110,15 @@ public class Client {
 
     }
 
-    private Pack readPack() throws IOException, ClassNotFoundException {
+    private Pack readPack() throws ClassNotFoundException, IOException {
         byte[] b = new byte[10000];
         ByteBuffer buf = ByteBuffer.wrap(b);
         buf.clear();
-        socketChannel.read(buf);
+        try {
+            socketChannel.read(buf);
+        } catch (IOException e) {
+            return null;
+        }
         Pack serverAnswer = Serializer.deserialize(b);
         return serverAnswer;
     }

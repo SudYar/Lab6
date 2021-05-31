@@ -14,6 +14,14 @@ public class RemoveAllByFormOfEducationCommand  extends AbstractCommand{
     }
 
     @Override
+    public String isValidArgument(String argument) {
+        if(argument == null) return "Нет аргументов, возможные варианты: " + FormOfEducation.nameList();
+        FormOfEducation formOfEducation = StudyGroupParser.parseFormOfEducation(argument);
+        if (formOfEducation == null) return ("Не найдена такая форма образования. Возможные варианты: " + FormOfEducation.nameList());
+        return "VALID";
+    }
+
+    @Override
     public String execute(Pack pack) {
         String argument = pack.getArgument();
         String answer = "";

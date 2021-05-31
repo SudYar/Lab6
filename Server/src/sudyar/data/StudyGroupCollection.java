@@ -30,7 +30,7 @@ public class StudyGroupCollection {
         s.setId(id);
         if (s.getGroupAdmin() != null) {
             if (passportIdSet.contains(s.getGroupAdmin().getPassportID()) &&
-                    ( collection.get(id).getGroupAdmin().getPassportID() == null ||
+                    ( collection.get(id).getGroupAdmin() == null ||
                     !s.getGroupAdmin().getPassportID().equals(collection.get(id).getGroupAdmin().getPassportID()))) {
 
                 throw new DuplicateException("ERROR: Повторение passportId админа");

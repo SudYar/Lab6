@@ -16,6 +16,13 @@ public class ReplaceIfLowe extends AbstractCommand {
     }
 
     @Override
+    public String isValidArgument(String argument) {
+        if (argument == null) return "Нет аргументов, требуется id типа int > 0";
+        if (StudyGroupParser.parseId(argument) == null) return "Неверный тип аргумента. В аргументы подается int > 0";
+        else return "VALID";
+    }
+
+    @Override
     public String execute(Pack pack) {
         String argument = pack.getArgument();
         StudyGroup s = pack.getStudyGroup();

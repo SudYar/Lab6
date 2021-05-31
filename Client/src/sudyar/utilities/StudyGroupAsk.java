@@ -1,7 +1,6 @@
 package sudyar.utilities;
 
 import sudyar.data.*;
-import sudyar.exception.DuplicateException;
 
 import java.util.Locale;
 import sudyar.internet.Client;
@@ -62,17 +61,17 @@ public class StudyGroupAsk {
 
         FormOfEducation formOfEducation  = null;
         System.out.print("Введите форму обучения, возможные варианты: " + FormOfEducation.nameList() + "" +
-                "; Либо введите null, чтобы не запоминать форму обучения\n>");
+                "; Либо введите пустую строку, чтобы не запоминать форму обучения\n>");
         line = client.readLine();
-        if (!"NULL".equals(line.toUpperCase(Locale.ROOT))) {
-            if (!"".equals(line.trim()) && line.trim().split(" ").length < 2)
+        if (!"".equals(line.toUpperCase(Locale.ROOT))) {
+            if (line.trim().split(" ").length < 2)
                 formOfEducation = StudyGroupParser.parseFormOfEducation(line.trim());
             while (formOfEducation == null) {
                 System.out.print("Неверно введена форма обучения, возможные варианты: " + FormOfEducation.nameList() + "" +
-                        "; Либо введите null, чтобы не запоминать форму обучения\n>");
+                        "; Либо введите пустую строку, чтобы не запоминать форму обучения\n>");
                 line = client.readLine();
-                if ("NULL".equals(line.toUpperCase(Locale.ROOT))) break;
-                if (!"".equals(line.trim()) && line.trim().split(" ").length < 2) {
+                if ("".equals(line.toUpperCase(Locale.ROOT))) break;
+                if (line.trim().split(" ").length < 2) {
                     formOfEducation = StudyGroupParser.parseFormOfEducation(line.trim());
                 }
             }
@@ -91,18 +90,13 @@ public class StudyGroupAsk {
         }
 
         Person groupAdmin = null;
-        System.out.print("Хотите ли добавить админа группы? Введите +/- ");
-        line = client.readLine();
-        while (!"+".equals(line) && !"-".equals(line)) {
-            System.out.print("Пожалуйста, введите только + или -, которые означают хотите ли вы добавить админа группы или нет соответственно ");
-            line = client.readLine();
-        }
-        if ("+".equals(line)) {
 
-            String nameAdmin = null;
-            System.out.print("Введите имя админа группы, не может быть пустым и содержать пробелы\n>");
-            line = client.readLine();
-            if (!"".equals(line.trim()) && line.trim().split(" ").length < 2) nameAdmin = StudyGroupParser.parseNameAdmin(line.trim());
+        String nameAdmin = null;
+        System.out.print("Введите имя админа группы, не может быть пустым и содержать пробелы,\nили введите пустую строку, если не хотите добавлять админа\n>");
+        line = client.readLine();
+        if (!"".equals(line.trim())){
+
+            if (line.trim().split(" ").length < 2) nameAdmin = StudyGroupParser.parseNameAdmin(line.trim());
             while (nameAdmin == null){
                 System.out.print("Неверно введено имя админа группы, оно не может быть пустым и содержать пробелы\n>");
                 line = client.readLine();
@@ -126,22 +120,15 @@ public class StudyGroupAsk {
             String passportId = null;
             System.out.print("Введите passportId админа (непустая уникальная строка без пробелов)\n>");
             line = client.readLine();
-            try {
-                if (!"".equals(line.trim()) && line.trim().split(" ").length < 2) {
-                    passportId = StudyGroupParser.parsePassportId(line.trim());
-                }
-            } catch (DuplicateException e){
-                System.out.print(e.getMessage()+"\n");
+            if (!"".equals(line.trim()) && line.trim().split(" ").length < 2) {
+                passportId = StudyGroupParser.parsePassportId(line.trim());
             }
+
             while (passportId == null){
                 System.out.print("Неверно введен passportId админа (должна быть непустая уникальная строка без пробелов)\n>");
                 line = client.readLine();
-                try {
-                    if (!"".equals(line.trim()) && line.trim().split(" ").length < 2) {
-                        passportId = StudyGroupParser.parsePassportId(line.trim());
-                    }
-                } catch (DuplicateException e){
-                    System.out.print(e.getMessage()+"\n");
+                if (!"".equals(line.trim()) && line.trim().split(" ").length < 2) {
+                    passportId = StudyGroupParser.parsePassportId(line.trim());
                 }
             }
             groupAdmin = StudyGroupParser.parsePerson(nameAdmin, weigh, passportId);

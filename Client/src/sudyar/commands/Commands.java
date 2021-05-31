@@ -5,7 +5,7 @@ import java.util.HashSet;
 
 public class Commands {
     HashMap<String, Command> commands = new HashMap<>();
-    HashSet<Command> commandsNeedStudyGroup = new HashSet<>();
+    HashSet<String> commandsNeedStudyGroup = new HashSet<>();
 
     public Commands(ClearCommand clearCommand,
                     CountByStudentsCountCommand countByStudentsCountCommand,
@@ -48,7 +48,7 @@ public class Commands {
         }
         for (Command command: set2) {
             commands.put(command.getName(), command);
-            commandsNeedStudyGroup.add(command);
+            commandsNeedStudyGroup.add(command.getName());
         }
     }
 
@@ -93,8 +93,8 @@ public class Commands {
         return commands.get(name);
     }
 
-    public boolean isNeedStudyGroup(Command command){
-        return commandsNeedStudyGroup.contains(command);
+    public boolean isNeedStudyGroup(String nameCommand){
+        return commandsNeedStudyGroup.contains(nameCommand);
     }
 
     @Override
