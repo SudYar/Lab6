@@ -40,7 +40,7 @@ public class StudyGroupCollection {
         }
         if (collection.get(id).getGroupAdmin() != null) passportIdSet.remove(collection.get(id).getGroupAdmin().getPassportID());
         collection.put(s.getId(), s);
-        passportIdSet.add(s.getGroupAdmin().getPassportID());
+        if (s.getGroupAdmin() != null) passportIdSet.add(s.getGroupAdmin().getPassportID());
     }
 
     public void insert(StudyGroup s) throws DuplicateException{

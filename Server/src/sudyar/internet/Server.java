@@ -21,6 +21,7 @@ public class Server {
     public static final int MAX_CONNECTION = 1;
     private boolean serverRun = true;
     private final HashSet<Socket> clientCollection = new HashSet<>();
+    private static boolean isHaveLog = true;
 
 
     public Server(StudyGroupCollection collection, int port, String log) {
@@ -32,15 +33,16 @@ public class Server {
             handler.setFormatter(new MyFormatter());
             logger.addHandler(handler);
         }catch (Exception e){
-            System.out.println("Путь к файлу, куда писать логи - неверен");
-            System.exit(1);
+            printErr(e.toString());
+            println("Работаем без логирования");
+            isHaveLog = false;
         }
     }
 
     public void run(Commands clientCommands, Commands serverCommands) {
 
         getServerConsole(serverCommands).start();
-        try(ServerSocket serverSocket = new ServerSocket(31174, 1)) {
+        try(ServerSocket serverSocket = new ServerSocket(31174)) {
             printInf("Сервер запущен");
             Socket clientSocket;
             while (serverRun){
@@ -72,7 +74,7 @@ public class Server {
             serverCommands.getCommand("save");
 
         }catch (IOException e){
-            println("Ошибка подключения сервера");
+            printInf("Ошибка подключения сервера");
 //            logger.warning(e.getMessage());
         }
 
@@ -153,7 +155,7 @@ public class Server {
 
     public void printInf(String line){
         System.out.println(line + "\n");
-        logger.info(line);
+        if (isHaveLog) logger.info(line);
     }
     public void println(String line){
         System.out.println(line);
@@ -164,7 +166,7 @@ public class Server {
 
     public void printErr(String line){
         System.out.println("ERROR: " + line);
-        logger.warning(line);
+        if (isHaveLog) logger.warning(line);
     }
 
 

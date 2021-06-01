@@ -62,10 +62,10 @@ public class Pack implements Serializable {
 
     @Override
     public String toString() {
-        return "command: " + (command == null ? "null" : command.getName())  + "\n" +
-                " argument: " + argument + '\n' +
-                " studyGroup: " + studyGroup + "\n"+
-                " answer: " + answer + '\n' +
-                " script: " + script;
+        return (command == null ? "" : " command: " + command.getName() + "\n") +
+                (argument == null ? "" : " argument: " + argument + '\n') +
+                (studyGroup == null ? "" : " studyGroup: " + studyGroup + "\n")+
+                (answer == null ? "" : " answer: " + answer + '\n') +
+                (script == null ? "" : " script: " + script);
     }
 }

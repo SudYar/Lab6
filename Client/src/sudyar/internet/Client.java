@@ -38,6 +38,10 @@ public class Client {
             System.out.println("Ошибка ввода, пожалуйста не вводите это снова");
             return "";
         }
+        if (line == null) {
+            System.out.println("ВВедено Ctrl + D\nЗавершаем работу");
+            System.exit(1);
+        }
         return line;
     }
 
@@ -68,7 +72,7 @@ public class Client {
                     Pack pack = readScript(argument);
                     if (pack != null) {
                         sendPack(pack);
-
+                        if (!isConnected) continue;
                         Pack answerPack = readPack();
                         if (answerPack!= null && !"".equals(answerPack.getAnswer())) System.out.println(answerPack.getAnswer());
                         else System.out.println("Ошибка при получении пакета");
@@ -85,6 +89,7 @@ public class Client {
                         if ("update".equals(command[0]) || "replace_if_lowe".equals(command[0])) {
                             Pack testRequest = new Pack(commands.getCommand("show_one"), argument);
                             sendPack(testRequest);
+                            if (!isConnected) continue;
                             Pack testAnswer = readPack();
                             if (testAnswer != null && !"".equals( testAnswer.getAnswer())) {
                                 if (!testAnswer.getAnswer().contains("\n")) {
@@ -99,6 +104,7 @@ public class Client {
                     }
                     else request = new Pack(commands.getCommand(command[0]), argument);
                     sendPack(request);
+                    if (!isConnected) continue;
 
                     Pack answerPack = readPack();
                     if (answerPack != null && !"".equals( answerPack.getAnswer())) System.out.println(answerPack.getAnswer());

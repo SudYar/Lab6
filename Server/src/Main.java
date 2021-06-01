@@ -14,19 +14,20 @@ public class Main {
         int port = 31174;
         String filePath = "Test.txt";
 
-        String log = "log.txt";
+        String log = "SudYar6log.txt";
         File logFile = new File(log);
         if (!logFile.isFile()) {
             try {
                 logFile.createNewFile();
             } catch (IOException e) {
-                System.out.println("Проблемы с лог файлом, дайте доступный log.txt");
+                System.out.println("Проблемы с лог файлом, дайте доступный SudYar6log.txt");
                 System.exit(1);
             }
         }
         FileParser fileParser = null;
         if (args != null && args.length>0) {
-            fileParser = getFile(args[0]);
+            if (args[0].contains("log.txt")) System.out.println("Извините, имя файла содержащее \"SudYar6log.txt\" занято");
+            else fileParser = getFile(args[0]);
         }
         while (fileParser == null){
             System.out.println("Хотите ввести другой путь до файла? Если нет, введите пустую строку");
@@ -43,7 +44,8 @@ public class Main {
             }
             if ("".equals(line)) {
                 fileParser = new FileParser();
-            } else fileParser = getFile(line.trim());
+            } else if (line.contains("log.txt")) System.out.println("Извините, имя файла содержащее \"SudYar6log.txt\" занято");
+            else fileParser = getFile(line.trim());
         }
         StudyGroupCollection collection;
 
